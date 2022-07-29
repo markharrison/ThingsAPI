@@ -15,3 +15,7 @@ Environment variables / configuration
 |--------------|-----------| 
 | ConnectionStrings:ThingsDbConnectionString | Storage Account Connection String  |  
 
+
+## Package 
+
+<https://github.com/markharrison/ThingsAPI/pkgs/container/thingsapi>
