@@ -59,8 +59,6 @@ namespace ThingsAPI
 
                 c.EnableAnnotations();
 
-                string strURL = config.GetValue<string>("ServerURL");
-
             });
             services.AddApplicationInsightsTelemetry();
 
