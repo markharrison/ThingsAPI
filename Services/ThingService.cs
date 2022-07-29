@@ -11,6 +11,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.CodeAnalysis.CSharp;
 using Azure;
 using System.Collections.Concurrent;
+using System.Reflection.PortableExecutable;
+using System.Collections.Specialized;
+using Microsoft.Extensions.Primitives;
+using System.Collections;
+using Azure.Core;
 
 namespace ThingsAPI.Services
 {
@@ -245,35 +250,72 @@ namespace ThingsAPI.Services
             return;
         }
 
+        public string EchoData(string key, string value)
+        {
+            return null;
+        }
 
         public string GetAppConfigInfo(HttpContext context)
         {
 
-            string pw = context.Request.Query["pw"].ToString();
-
-
-            string strAppConfigInfoHtml = "";
-            strAppConfigInfoHtml += "<html><head>";
-            strAppConfigInfoHtml += "<style>";
-            strAppConfigInfoHtml += "body { font-family: \"Segoe UI\",Roboto,\"Helvetica Neue\",Arial;}";
-            strAppConfigInfoHtml += "</style>";
-            strAppConfigInfoHtml += "</head><body>";
-            strAppConfigInfoHtml += "<h3>ThingsAPI - AppConfigInfo </h3>";
-            strAppConfigInfoHtml += "OS Description:  " + System.Runtime.InteropServices.RuntimeInformation.OSDescription + "<br/>";
-            strAppConfigInfoHtml += "Framework Description:  " + System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription + "<br/>";
-            strAppConfigInfoHtml += "BuildIdentifier:  " + _config.GetValue<string>("BuildIdentifier") + "<br/>";
-            if (_config.GetValue<string>("AdminPW") == context.Request.Query["pw"].ToString())
+            string EchoData(string key, string value)
             {
-                strAppConfigInfoHtml += "ASPNETCORE_ENVIRONMENT:  " + _config.GetValue<string>("ASPNETCORE_ENVIRONMENT") + "<br/>";
-                strAppConfigInfoHtml += "ApplicationInsights ConnectionString:  " + _config.GetValue<string>("ApplicationInsights:ConnectionString") + "<br/>";
-                strAppConfigInfoHtml += "Datastore ConnectionString:  " + _config.GetConnectionString("ThingsDbConnectionString") + "<br/>";
+                return key + ": <span class='echodata'>" + value + "</span><br/>";
             }
 
-            strAppConfigInfoHtml += "<hr/>";
-            strAppConfigInfoHtml += "<a href='/'>Home</a>" + "<br/>";
-            strAppConfigInfoHtml += "</body></html>";
+            string EchoDataBull(string key, string value)
+            {
+                return EchoData("&nbsp;&bull;&nbsp;" + key,value);
+            }
 
-            return strAppConfigInfoHtml;
+
+            string strHtml = "";
+            strHtml += "<html><head>";
+            strHtml += "<style>";
+            strHtml += "body { font-family: \"Segoe UI\",Roboto,\"Helvetica Neue\",Arial;}";
+            strHtml += ".echodata { color: blue }";
+            strHtml += "</style>";
+            strHtml += "</head><body>";
+            strHtml += "<h3>ThingsAPI - AppConfigInfo </h3>";
+
+            strHtml += EchoData("OS Description", System.Runtime.InteropServices.RuntimeInformation.OSDescription);
+            strHtml += EchoData("Framework Description", System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription);
+            strHtml += EchoData("BuildIdentifier", _config.GetValue<string>("BuildIdentifier"));
+
+            if (_config.GetValue<string>("AdminPW") == context.Request.Query["pw"].ToString())
+            {
+                strHtml += EchoData("ASPNETCORE_ENVIRONMENT", _config.GetValue<string>("ASPNETCORE_ENVIRONMENT"));
+                strHtml += EchoData("ApplicationInsights ConnectionString", _config.GetValue<string>("ApplicationInsights:ConnectionString"));
+                strHtml += EchoData("Datastore ConnectionString", _config.GetConnectionString("ThingsDbConnectionString"));
+            }
+
+            strHtml += "RequestInfo: <br/>";
+            strHtml += EchoDataBull("host", context.Request.Host.ToString());
+            strHtml += EchoDataBull("ishttps", context.Request.IsHttps.ToString());
+            strHtml += EchoDataBull("method", context.Request.Method.ToString());
+            strHtml += EchoDataBull("path", context.Request.Path.ToString());
+            strHtml += EchoDataBull("pathbase", context.Request.PathBase.ToString());
+            strHtml += EchoDataBull("pathbase", context.Request.Protocol.ToString());
+            strHtml += EchoDataBull("pathbase", context.Request.QueryString.ToString());
+            strHtml += EchoDataBull("scheme", context.Request.Scheme.ToString());
+
+            strHtml += "Headers: <br/>";
+            foreach (var key in context.Request.Headers.Keys)
+            {
+                strHtml += EchoDataBull(key, $"{context.Request.Headers[key]}");
+            }
+
+            strHtml += "Connection:<br/>";
+            strHtml += EchoDataBull("localipaddress", context.Connection.LocalIpAddress.ToString());
+            strHtml += EchoDataBull("localport", context.Connection.LocalPort.ToString());
+            strHtml += EchoDataBull("remoteipaddress", context.Connection.RemoteIpAddress.ToString());
+            strHtml += EchoDataBull("remoteport", context.Connection.RemotePort.ToString());
+
+            strHtml += "<hr/>";
+            strHtml += "<a href='/'>Home</a>" + "<br/>";
+            strHtml += "</body></html>";
+
+            return strHtml;
         }
     }
 }

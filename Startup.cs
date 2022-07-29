@@ -85,18 +85,15 @@ namespace ThingsAPI
                 c.PreSerializeFilters.Add((swaggerDoc, httpRequest) =>
                 {
                     var basePath = "/";
+                    var host = httpRequest.Host.Value;
+                    var scheme = (httpRequest.IsHttps || httpRequest.Headers["x-forwarded-proto"].ToString() == "https") ? "https" : "http";
 
-                    if (httpRequest.Headers["x-forwarded-proto"].Count == 0) 
+                    if (httpRequest.Headers["x-forwarded-host"].ToString() != "")
                     {
-                        swaggerDoc.Servers = new List<OpenApiServer> { new OpenApiServer { Url = $"{httpRequest.Scheme}://{httpRequest.Host.Value}{basePath}" } };
+                        host = httpRequest.Headers["x-forwarded-host"].ToString() + ":" + httpRequest.Headers["x-forwarded-port"].ToString();
                     }
-                    else
-                    {
-                        var scheme = httpRequest.Headers["x-forwarded-proto"].ToString();
-                        var host = httpRequest.Headers["x-forwarded-host"].ToString();
-                        var port = httpRequest.Headers["x-forwarded-port"].ToString();
-                        swaggerDoc.Servers = new List<OpenApiServer> { new OpenApiServer { Url = $"{scheme}://{host}:{port}{basePath}" } };
-                    }
+
+                    swaggerDoc.Servers = new List<OpenApiServer> { new OpenApiServer { Url = $"{scheme}://{host}{basePath}" } };
 
                 });
             });
