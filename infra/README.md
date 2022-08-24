@@ -42,7 +42,7 @@ printf -v STORAGECS "DefaultEndpointsProtocol=https;AccountName=$STORAGENAME;Acc
 
 ```
 
-### Create a WebApp and configure
+### Create AppService and configure
 
 ```
 az webapp create -g $RG -p $PLANNAME -n $APPNAME --runtime DOTNETCORE:6.0
