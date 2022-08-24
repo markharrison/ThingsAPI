@@ -13,14 +13,14 @@ STORAGENAME="thingzstorage"
 
 ```
 
-# create a RG - if needed
+### Create a RG - if needed
 
 ```
 az group create -g $RG -l $LOCATION  -o table 
 
 ```
 
-# create a AppService Plan - if needed
+### Create a AppService Plan - if needed
 
 ```
 az appservice plan create -g $RG  \
@@ -31,7 +31,7 @@ az appservice plan create -g $RG  \
 
 ```
    
-# create storage account and get connection string 
+### Create storage account and get connection string 
 
 ```
 az storage account create -n $STORAGENAME -g $RG -l $LOCATION --sku Standard_LRS
@@ -42,7 +42,7 @@ printf -v STORAGECS "DefaultEndpointsProtocol=https;AccountName=$STORAGENAME;Acc
 
 ```
 
-# create a WebApp and configure
+### Create a WebApp and configure
 
 ```
 az webapp create -g $RG -p $PLANNAME -n $APPNAME --runtime DOTNETCORE:6.0
@@ -66,7 +66,7 @@ az webapp start -g $RG -n $APPNAME
 
 ```
 
-# Intialise - dummy data 
+### Intialise with dummy data 
 
 ```
 curl -X DELETE https://$APPNAME.azurewebsites.net/api/Things
