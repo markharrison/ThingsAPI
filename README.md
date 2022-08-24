@@ -15,6 +15,10 @@ Environment variables / configuration
 |--------------|-----------| 
 | ConnectionStrings:ThingsDbConnectionString | Storage Account Connection String  |  
 
+## Infrastructure as Code
+
+<https://github.com/markharrison/ThingsAPI/blob/main/infra/README.md>
+
 
 ## Package 
 
