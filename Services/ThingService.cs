@@ -29,7 +29,7 @@ namespace ThingsAPI.Services
         {
             _config = config;
 
-            var vCS = config.GetConnectionString("ThingsDbConnectionString");
+            var vCS = config.GetConnectionString("ThingsStorageConnectionString");
             string tableName = "thingsdata";
 
             try
@@ -286,7 +286,7 @@ namespace ThingsAPI.Services
             {
                 strHtml += EchoData("ASPNETCORE_ENVIRONMENT", _config.GetValue<string>("ASPNETCORE_ENVIRONMENT"));
                 strHtml += EchoData("APPLICATIONINSIGHTS_CONNECTION_STRING", _config.GetValue<string>("APPLICATIONINSIGHTS_CONNECTION_STRING"));
-                strHtml += EchoData("Datastore ConnectionString", _config.GetConnectionString("ThingsDbConnectionString"));
+                strHtml += EchoData("ThingsStorageConnectionString", _config.GetConnectionString("ThingsStorageConnectionString"));
             }
 
             strHtml += "RequestInfo: <br/>";

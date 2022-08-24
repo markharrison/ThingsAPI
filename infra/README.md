@@ -53,7 +53,7 @@ az webapp config appsettings set -g $RG -n $APPNAME --settings \
  AdminPW="????????"
 
 az webapp config connection-string set -g $RG -n $APPNAME -t custom --settings \
-  ThingsDbConnectionString=$STORAGECS
+  ThingsStorageConnectionString=$STORAGECS
 
 
 az webapp config container set -g $RG -n $APPNAME \
