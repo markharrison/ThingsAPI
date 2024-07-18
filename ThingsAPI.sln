@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.3.32611.2
+VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsAPI", "ThingsAPI.csproj", "{7093312A-B864-4A46-B4D1-CF1531B82EF8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsAPI", "ThingsAPI.csproj", "{7ECFFB3B-026D-4488-9D5F-7EF22C0AF16C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7093312A-B864-4A46-B4D1-CF1531B82EF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7093312A-B864-4A46-B4D1-CF1531B82EF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7093312A-B864-4A46-B4D1-CF1531B82EF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7093312A-B864-4A46-B4D1-CF1531B82EF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ECFFB3B-026D-4488-9D5F-7EF22C0AF16C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ECFFB3B-026D-4488-9D5F-7EF22C0AF16C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ECFFB3B-026D-4488-9D5F-7EF22C0AF16C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ECFFB3B-026D-4488-9D5F-7EF22C0AF16C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {2925B072-C0E3-45E3-A515-B69292A935B9}
+		SolutionGuid = {759CA636-9A7E-4DF1-8C07-8694BA24B79A}
 	EndGlobalSection
 EndGlobal

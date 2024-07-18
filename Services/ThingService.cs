@@ -1,21 +1,7 @@
-﻿using System;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using ThingsAPI.Models;
+﻿using Azure;
 using Azure.Data.Tables;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.AspNetCore.Http;
-using Microsoft.CodeAnalysis.CSharp;
-using Azure;
-using System.Collections.Concurrent;
-using System.Reflection.PortableExecutable;
-using System.Collections.Specialized;
-using Microsoft.Extensions.Primitives;
-using System.Collections;
-using Azure.Core;
+using System.Diagnostics;
+using ThingsAPI.Models;
 
 namespace ThingsAPI.Services
 {
@@ -84,7 +70,7 @@ namespace ThingsAPI.Services
             return _Things;
         }
 
-        public async Task<ThingItem> FindByNameLocation(ThingItem Thing)
+        public async Task<ThingItem?> FindByNameLocation(ThingItem Thing)
         {
             if (Thing.Latitude == null || Thing.Longitude == null || Thing.Name == null)
             {
@@ -97,8 +83,9 @@ namespace ThingsAPI.Services
                 Pageable<ThingItemEntity> queryResultsFilter = _tableclient.Query<ThingItemEntity>(e => e.PartitionKey == "Thing" && e.Name == Thing.Name);
                 foreach (ThingItemEntity entity in queryResultsFilter)
                 {
-                    decimal deltaLongitude = Math.Abs((decimal)entity.Longitude - (decimal)Thing.Longitude);
-                    decimal deltaLatitude = Math.Abs((decimal)entity.Latitude - (decimal)Thing.Latitude);
+                    decimal deltaLongitude = Math.Abs((decimal)(entity.Longitude ?? 0) - (decimal)(Thing.Longitude ?? 0));
+                    decimal deltaLatitude = Math.Abs((decimal)(entity.Latitude ?? 0) - (decimal)(Thing.Latitude ?? 0));
+
                     if (deltaLongitude < 0.00015m && deltaLatitude < 0.00015m)
                     {
                         ThingItem _Thing = new ThingItem
@@ -129,11 +116,11 @@ namespace ThingsAPI.Services
 
 
 
-        public async Task<ThingItem> FindById(string id)
+        public async Task<ThingItem?> FindById(string id)
         {
             try
             {
-                Pageable<ThingItemEntity> queryResultsFilter = _tableclient.Query<ThingItemEntity>(e => e.PartitionKey == "Thing" && e.RowKey == id.PadLeft(4, '0'));  
+                Pageable<ThingItemEntity> queryResultsFilter = _tableclient.Query<ThingItemEntity>(e => e.PartitionKey == "Thing" && e.RowKey == id.PadLeft(4, '0'));
                 foreach (ThingItemEntity entity in queryResultsFilter)
                 {
                     Debug.WriteLine(entity.Name);
@@ -178,8 +165,8 @@ namespace ThingsAPI.Services
                     RowKey = id.PadLeft(4, '0'),
                     Thingid = long.Parse(id),
                     Name = Thing.Name,
-                    Longitude = (double)Thing.Longitude,
-                    Latitude = (double)Thing.Latitude,
+                    Longitude = (double)(Thing.Longitude ?? 0),
+                    Latitude = (double)(Thing.Latitude ?? 0),
                     Text = Thing.Text,
                     Status = Thing.Status,
                     Image = Thing.Image,
@@ -234,7 +221,8 @@ namespace ThingsAPI.Services
                     batch.Add(new TableTransactionAction(TableTransactionActionType.Delete, entity));
                 }
 
-                if (batch.Count > 0) {
+                if (batch.Count > 0)
+                {
                     _tableclient.SubmitTransaction(batch);
                 }
 
@@ -250,10 +238,10 @@ namespace ThingsAPI.Services
             return;
         }
 
-        public string EchoData(string key, string value)
-        {
-            return null;
-        }
+        //public string EchoData(string key, string value)
+        //{
+        //    return null;
+        //}
 
         public string GetAppConfigInfo(HttpContext context)
         {
@@ -265,7 +253,7 @@ namespace ThingsAPI.Services
 
             string EchoDataBull(string key, string value)
             {
-                return EchoData("&nbsp;&bull;&nbsp;" + key,value);
+                return EchoData("&nbsp;&bull;&nbsp;" + key, value);
             }
 
 
@@ -280,13 +268,13 @@ namespace ThingsAPI.Services
 
             strHtml += EchoData("OS Description", System.Runtime.InteropServices.RuntimeInformation.OSDescription);
             strHtml += EchoData("Framework Description", System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription);
-            strHtml += EchoData("BuildIdentifier", _config.GetValue<string>("BuildIdentifier"));
+            strHtml += EchoData("BuildIdentifier", _config.GetValue<string>("BuildIdentifier") ?? "");
 
             if (_config.GetValue<string>("AdminPW") == context.Request.Query["pw"].ToString())
             {
-                strHtml += EchoData("ASPNETCORE_ENVIRONMENT", _config.GetValue<string>("ASPNETCORE_ENVIRONMENT"));
-                strHtml += EchoData("APPLICATIONINSIGHTS_CONNECTION_STRING", _config.GetValue<string>("APPLICATIONINSIGHTS_CONNECTION_STRING"));
-                strHtml += EchoData("ThingsStorageConnectionString", _config.GetConnectionString("ThingsStorageConnectionString"));
+                strHtml += EchoData("ASPNETCORE_ENVIRONMENT", _config.GetValue<string>("ASPNETCORE_ENVIRONMENT") ?? "");
+                strHtml += EchoData("APPLICATIONINSIGHTS_CONNECTION_STRING", _config.GetValue<string>("APPLICATIONINSIGHTS_CONNECTION_STRING") ?? "");
+                strHtml += EchoData("ThingsStorageConnectionString", _config.GetConnectionString("ThingsStorageConnectionString") ?? "");
             }
 
             strHtml += "RequestInfo: <br/>";
@@ -306,9 +294,9 @@ namespace ThingsAPI.Services
             }
 
             strHtml += "Connection:<br/>";
-            strHtml += EchoDataBull("localipaddress", context.Connection.LocalIpAddress.ToString());
+            strHtml += EchoDataBull("localipaddress", context.Connection.LocalIpAddress?.ToString() ?? "");
             strHtml += EchoDataBull("localport", context.Connection.LocalPort.ToString());
-            strHtml += EchoDataBull("remoteipaddress", context.Connection.RemoteIpAddress.ToString());
+            strHtml += EchoDataBull("remoteipaddress", context.Connection.RemoteIpAddress?.ToString() ?? "");
             strHtml += EchoDataBull("remoteport", context.Connection.RemotePort.ToString());
 
             strHtml += "<hr/>";

@@ -28,10 +28,10 @@ namespace ThingsAPI.Controllers
 
         private async Task<IEnumerable<ThingItem>> DoGetAllThingsAsync()
         {
-            IEnumerable<ThingItem> _ThingList;
+            IEnumerable<ThingItem>? _ThingList;
             if (_MemoryCache.TryGetValue("GetAll", out _ThingList))
             {
-                return _ThingList;
+                return _ThingList ?? Enumerable.Empty<ThingItem>();
             }
             _ThingList = await _ThingService.GetAll();
             _MemoryCache.Set("GetAll", _ThingList, TimeSpan.FromMinutes(1));
@@ -43,7 +43,7 @@ namespace ThingsAPI.Controllers
             _MemoryCache.Remove("GetAll");
         }
 
-        private ProblemDetails DoValidateThingItem(ThingItem Thing)
+        private ProblemDetails? DoValidateThingItem(ThingItem Thing)
         {
             if (Thing.Latitude != null)
             {
@@ -121,7 +121,8 @@ namespace ThingsAPI.Controllers
                 Thingid = Convert.ToInt64(id)
             };
 
-            _Thing.Name = (ThingUpdate.Name ?? ThingStored.Name).Trim();
+            _Thing.Name = (ThingUpdate.Name ?? ThingStored.Name ?? string.Empty).Trim();
+
             _Thing.Longitude = ThingUpdate.Longitude != null ? (double)ThingUpdate.Longitude : ThingStored.Longitude;
             _Thing.Latitude = ThingUpdate.Latitude != null ? (double)ThingUpdate.Latitude : ThingStored.Latitude;
             _Thing.Text = ThingUpdate.Text ?? ThingStored.Text;
@@ -153,7 +154,7 @@ namespace ThingsAPI.Controllers
             {
                 return freeThingid.ToString();
             }
-            return null;
+            return string.Empty;
         }
 
         [HttpGet(Name = "GetThings")]
@@ -171,7 +172,7 @@ namespace ThingsAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(string id)
         {
-            ThingItem _Thing = await _ThingService.FindById(id);
+            ThingItem? _Thing = await _ThingService.FindById(id);
             if (_Thing == null)
             {
                 return NotFound(new ProblemDetails { Status = 404, Title = "Not Found" });
@@ -196,15 +197,15 @@ namespace ThingsAPI.Controllers
                 });
             }
 
-            ProblemDetails problemVal = DoValidateThingItem(ThingUpdate);
+            ProblemDetails? problemVal = DoValidateThingItem(ThingUpdate);
             if (problemVal != null)
                 return UnprocessableEntity(problemVal);
 
-            ThingItem ThingStored = await _ThingService.FindByNameLocation(ThingUpdate);
+            ThingItem? ThingStored = await _ThingService.FindByNameLocation(ThingUpdate);
             if (ThingStored == null)
             {
                 string id = await DoGetNextFreeIdAsync();
-                if (id == null)
+                if (string.IsNullOrEmpty(id))
                 {
                     return UnprocessableEntity(new ProblemDetails { Status = 422, Title = "Unprocessable Entity - No Free Id'" });
                 }
@@ -248,11 +249,11 @@ namespace ThingsAPI.Controllers
                 });
             }
 
-            ProblemDetails problemVal = DoValidateThingItem(ThingUpdate);
+            ProblemDetails? problemVal = DoValidateThingItem(ThingUpdate);
             if (problemVal != null)
                 return UnprocessableEntity(problemVal);
 
-            ThingItem ThingStored = await _ThingService.FindById(id);
+            ThingItem? ThingStored = await _ThingService.FindById(id);
 
             if (ThingStored == null)
                 return await DoInsertThingAsync(id, ThingUpdate);
@@ -278,7 +279,7 @@ namespace ThingsAPI.Controllers
                 });
             }
 
-            ThingItem Thing = await _ThingService.FindById(id);
+            ThingItem? Thing = await _ThingService.FindById(id);
             if (Thing == null)
             {
                 return NotFound(new ProblemDetails
