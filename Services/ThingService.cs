@@ -21,6 +21,8 @@ namespace ThingsAPI.Services
             {
                 if (_config.GetValue<bool>("ThingsStorageUseManagedIdentity"))
                 {
+                    Console.WriteLine("Managed Identity");
+
                     string storageAccountName = config.GetValue<string>("ThingsStorageAccountName") ?? "";
                     var credential = new ManagedIdentityCredential();
 
@@ -35,6 +37,8 @@ namespace ThingsAPI.Services
                 }
                 else
                 {
+                    Console.WriteLine("Connection String Authentication");
+
                     string storageConnectionString = config.GetValue<string>("ThingsStorageConnectionString") ?? "";
                     _tableclient = new TableClient(storageConnectionString, tableName);
                 }
