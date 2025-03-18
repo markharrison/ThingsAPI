@@ -19,7 +19,9 @@ namespace ThingsAPI.Services
    
             try
             {
-                if (_config.GetValue<bool>("ThingsStorageUseManagedIdentity"))
+                bool isManagedIdentityEnabled = bool.TryParse(_config.GetValue<string>("ThingsStorageUseManagedIdentity"), out var result) && result;
+
+                if (isManagedIdentityEnabled)
                 {
                     Console.WriteLine("Managed Identity");
 
@@ -296,7 +298,7 @@ namespace ThingsAPI.Services
             {
                 strHtml += EchoData("ASPNETCORE_ENVIRONMENT", _config.GetValue<string>("ASPNETCORE_ENVIRONMENT") ?? "");
                 strHtml += EchoData("APPLICATIONINSIGHTS_CONNECTION_STRING", _config.GetValue<string>("APPLICATIONINSIGHTS_CONNECTION_STRING") ?? "");
-                strHtml += EchoData("ThingsStorageUseManagedIdentity", (_config.GetValue<bool>("ThingsStorageUseManagedIdentity")) ? "true" : "false" );
+                strHtml += EchoData("ThingsStorageUseManagedIdentity", _config.GetValue<string>("ThingsStorageUseManagedIdentity") ?? "");
                 strHtml += EchoData("ThingsStorageConnectionString", _config.GetValue<string>("ThingsStorageConnectionString") ?? "");
                 strHtml += EchoData("ThingsStorageAccountName", _config.GetValue<string>("ThingsStorageAccountName") ?? "");
             }
