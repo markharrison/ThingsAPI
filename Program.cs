@@ -24,7 +24,7 @@ namespace ThingsAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Version = "v1",
+                    Version = "3.0.1",
                     Title = "Mark Harrison Things API",
                     Description = "Things API",
                     TermsOfService = new Uri("https://github.com/markharrison/ThingsAPI/blob/master/LICENSE"),
