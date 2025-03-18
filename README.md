@@ -37,3 +37,7 @@ For Managed Identity:
 ## Package 
 
 <https://github.com/markharrison/ThingsAPI/pkgs/container/thingsapi>
+
+## History
+
+18 March 2025 - upgrade to .NET 9.0, added Managed Identity for Storage access
