@@ -2,6 +2,7 @@
 using Azure.Data.Tables;
 using System.Diagnostics;
 using ThingsAPI.Models;
+using Azure.Identity;
 
 namespace ThingsAPI.Services
 {
@@ -14,13 +15,30 @@ namespace ThingsAPI.Services
         public ThingService(IConfiguration config)
         {
             _config = config;
-
-            var vCS = config.GetConnectionString("ThingsStorageConnectionString");
             string tableName = "thingsdata";
-
+   
             try
             {
-                _tableclient = new TableClient(vCS, tableName);
+                if (_config.GetValue<bool>("ThingsStorageUseManagedIdentity"))
+                {
+                    string storageAccountName = config.GetValue<string>("ThingsStorageAccountName") ?? "";
+                    var credential = new ManagedIdentityCredential();
+
+                    // Create TableServiceClient
+                    var serviceClient = new TableServiceClient(
+                        new Uri($"https://{storageAccountName}.table.core.windows.net"),
+                        credential
+                    );
+
+                    // Get TableClient
+                    _tableclient = serviceClient.GetTableClient(tableName);
+                }
+                else
+                {
+                    string storageConnectionString = config.GetValue<string>("ThingsStorageConnectionString") ?? "";
+                    _tableclient = new TableClient(storageConnectionString, tableName);
+                }
+
                 _tableclient.CreateIfNotExists();
 
             }
@@ -274,7 +292,9 @@ namespace ThingsAPI.Services
             {
                 strHtml += EchoData("ASPNETCORE_ENVIRONMENT", _config.GetValue<string>("ASPNETCORE_ENVIRONMENT") ?? "");
                 strHtml += EchoData("APPLICATIONINSIGHTS_CONNECTION_STRING", _config.GetValue<string>("APPLICATIONINSIGHTS_CONNECTION_STRING") ?? "");
-                strHtml += EchoData("ThingsStorageConnectionString", _config.GetConnectionString("ThingsStorageConnectionString") ?? "");
+                strHtml += EchoData("ThingsStorageUseManagedIdentity", (_config.GetValue<bool>("ThingsStorageUseManagedIdentity")) ? "true" : "false" );
+                strHtml += EchoData("ThingsStorageConnectionString", _config.GetValue<string>("ThingsStorageConnectionString") ?? "");
+                strHtml += EchoData("ThingsStorageAccountName", _config.GetValue<string>("ThingsStorageAccountName") ?? "");
             }
 
             strHtml += "RequestInfo: <br/>";
